@@ -19,5 +19,9 @@ namespace Raytracing
         {
             return this.point + this.direction * t;
         }
+        public static Vec3 sampleSquare()
+        {
+            return new Vec3(Util.RandomDouble() - 0.5, Util.RandomDouble() - 0.5, 0);
+        }
     }
 }

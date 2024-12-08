@@ -13,9 +13,8 @@ namespace Raytracing
 {
     public partial class Raytracer : Form
     {
-        double PI = Math.PI;
+        public const double PI = Math.PI;
         HittableList world = new HittableList();
-        Vec3 cameraCenter;
         Camera cam = new Camera();
         public void SetVariables()
         {
@@ -24,10 +23,7 @@ namespace Raytracing
             world.Add(new Sphere(new Vec3(0, -100.5, -1), 100));
             cam.aspectRatio = 16 / 9;
             cam.imageWidth = 400;
-        }
-        public double DegreesToRadions(double degrees)
-        {
-            return degrees * PI / 180;
+            cam.samplesPerPixel = 100;
         }
         public Raytracer()
         {

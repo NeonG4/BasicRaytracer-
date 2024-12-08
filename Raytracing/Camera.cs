@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,24 +17,26 @@ namespace Raytracing
         const double PI = Math.PI;
         Pen render = new Pen(Color.FromArgb(0, 0, 0), 1);
         public int imageHeight;
+        public int samplesPerPixel;
+        int pixelSamplesScale;
         public int imageWidth;
         public double aspectRatio;
         double viewportHeight;
         double viewportWidth;
         double focalLength;
-        Vec3 cameraCenter;
+        public Vec3 center;
         Vec3 viewportU;
         Vec3 viewportV;
         Vec3 pixelDeltaU;
         Vec3 pixelDeltaV;
         Vec3 viewportUpperLeft;
-        Vec3 pixel00Loc;
+        public Vec3 pixel00Loc;
         private void Initialize()
         {
             imageHeight = (int)(imageWidth / aspectRatio);
             if (imageHeight < 1) { imageHeight = 1; }
 
-            cameraCenter = new Vec3(0, 0, 0);
+            center = new Vec3(0, 0, 0);
             
             focalLength = 1;
             viewportHeight = 2;
@@ -44,27 +48,27 @@ namespace Raytracing
             pixelDeltaU = viewportU / imageWidth;
             pixelDeltaV = viewportV / imageHeight;
             
-            viewportUpperLeft = cameraCenter - new Vec3(0, 0, focalLength) - viewportU / 2 - viewportV / 2;
+            viewportUpperLeft = center - new Vec3(0, 0, focalLength) - viewportU / 2 - viewportV / 2;
             pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
+            samplesPerPixel = 100;
+            pixelSamplesScale = 1 / samplesPerPixel;
         }
         public void Render(Hittable world, PaintEventArgs e)
         {
             Initialize();
-            Vec3 pixelCenter;
-            Vec3 rayDirection;
             Ray r;
-            Vec3 unitDirection;
-            Vec3 color;
-            Vec3 n;
+            Vec3 pixelColor;
             for (double j = 0; j < imageHeight; j++)
             {
                 for (double i = 0; i < imageWidth; i++)
                 {
-                    pixelCenter = pixel00Loc + (i * pixelDeltaU) + (j * pixelDeltaV);
-                    rayDirection = pixelCenter - cameraCenter;
-                    r = new Ray(cameraCenter, rayDirection);
-                    color = rayColor(r, world);
-                    DrawColor(color, i, j, e);
+                    pixelColor = new Vec3(0, 0, 0);
+                    for (int sample = 0; sample < samplesPerPixel; sample++)
+                    {
+                        r = GetRay(i, j);
+                        pixelColor += rayColor(r, world); 
+                    }
+                    DrawColor(pixelColor / samplesPerPixel, i, j, e);
                 }
             }
         }
@@ -81,9 +85,21 @@ namespace Raytracing
         }
         private void DrawColor(Vec3 color, double x, double y, PaintEventArgs e)
         {
+            Interval intensity = new Interval(0, 0.999);
             Rectangle rect = new Rectangle((int)x, (int)y, 1, 1);
-            render.Color = Color.FromArgb((int)(255 * color.x), (int)(255 * color.y), (int)(255 * color.z));
+            int r = (int) (256 * intensity.Clamp(color.x));
+            int g = (int) (256 * intensity.Clamp(color.y));
+            int b = (int) (256 * intensity.Clamp(color.z));
+            render.Color = Color.FromArgb(r, g, b);
             e.Graphics.DrawRectangle(render, rect);
+        }
+        public Ray GetRay(double x, double y)
+        {
+            Vec3 offset = Ray.sampleSquare();
+            Vec3 pixelSample = pixel00Loc + ((x + offset.x) * pixelDeltaU) + ((y + offset.y) * pixelDeltaV);
+            Vec3 rayOrigin = center;
+            Vec3 rayDirection = pixelSample - rayOrigin;
+            return new Ray(rayOrigin, rayDirection);
         }
     }
 }

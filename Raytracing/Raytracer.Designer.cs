@@ -35,7 +35,7 @@
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1160, 979);
-            DoubleBuffered = true;
+            DoubleBuffered = true; // shows a visual drawing instead of taking 12 years to draw the entire thing
             Name = "Raytracer";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Raytracer";
