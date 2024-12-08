@@ -116,5 +116,10 @@ namespace Raytracing
                 return 0 - onUnitSphere;
             }
         }
+        public bool NearZero()
+        {
+            var s = 1e-8;
+            return (Math.Abs(this.x) < s) && (Math.Abs(this.y) < s) && (Math.Abs(this.z) < s);
+        }
     }
 }

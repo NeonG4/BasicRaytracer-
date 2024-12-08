@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 
 namespace Raytracing
-{
+{   
     public class HitRecord
     {
-        public Vec3 p;
+        public Material mat;
+        public Vec3 p; 
         public Vec3 normal;
         public double t;
         bool frontFace;
@@ -28,6 +30,7 @@ namespace Raytracing
     }
     public class Sphere : Hittable
     {
+        Material mat;
         public Vec3 center;
         public double radius;
         public Sphere(Vec3 center, double radius)
@@ -67,6 +70,7 @@ namespace Raytracing
             rec = new HitRecord();
             rec.t = root;
             rec.p = r.at(rec.t);
+            rec.mat = mat;
             Vec3 outwardNormal = (rec.p - center) / radius;
             rec.SetFaceNormal(r, outwardNormal);
             return true;
