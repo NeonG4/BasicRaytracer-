@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 // tutorial is from https://raytracing.github.io/books/RayTracingInOneWeekend.html 
-// finished just before 9.4
+// finished just before 10
 namespace Raytracing
 {
     public partial class Raytracer : Form

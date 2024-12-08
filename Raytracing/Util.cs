@@ -33,5 +33,13 @@ namespace Raytracing
         {
             return new Vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
         }
+        public static double LinearToGamma(double linearComponent)
+        {
+            if (linearComponent > 0)
+            {
+                return Math.Sqrt(linearComponent);
+            }
+            return 0;
+        }
     }
 }

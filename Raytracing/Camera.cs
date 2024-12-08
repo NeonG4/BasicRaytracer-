@@ -83,7 +83,7 @@ namespace Raytracing
             HitRecord rec;
             if (world.Hit(r, new Interval(0.001, INFINITY), out rec))
             {
-                Vec3 direction = Vec3.RandomOnHemisphere(rec.normal);
+                Vec3 direction = rec.normal + Vec3.RandomUnitVector();
                 return 0.5 * RayColor(new Ray(rec.p, direction), depth - 1, world);
             }
             Vec3 unitDirection = Vec3.Unit(r.direction);
@@ -94,10 +94,16 @@ namespace Raytracing
         {
             Interval intensity = new Interval(0, 0.999);
             Rectangle rect = new Rectangle((int)x, (int)y, 1, 1);
-            int r = (int) (256 * intensity.Clamp(color.x));
-            int g = (int) (256 * intensity.Clamp(color.y));
-            int b = (int) (256 * intensity.Clamp(color.z));
-            render.Color = Color.FromArgb(r, g, b);
+            double r = color.x;
+            double g = color.y;
+            double b = color.z;
+            r = Util.LinearToGamma(r);
+            b = Util.LinearToGamma(b);
+            g = Util.LinearToGamma(g);
+            int ra = (int) (256 * intensity.Clamp(r));
+            int ga = (int) (256 * intensity.Clamp(g));
+            int ba = (int) (256 * intensity.Clamp(b));
+            render.Color = Color.FromArgb(ra, ga, ba);
             e.Graphics.DrawRectangle(render, rect);
         }
         public Ray GetRay(double x, double y)
