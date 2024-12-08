@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 // tutorial is from https://raytracing.github.io/books/RayTracingInOneWeekend.html 
+// finished just before 9.4
 namespace Raytracing
 {
     public partial class Raytracer : Form
@@ -23,7 +24,7 @@ namespace Raytracing
             world.Add(new Sphere(new Vec3(0, -100.5, -1), 100));
             cam.aspectRatio = 16 / 9;
             cam.imageWidth = 400;
-            cam.samplesPerPixel = 100;
+            cam.samplesPerPixel = 1;
         }
         public Raytracer()
         {

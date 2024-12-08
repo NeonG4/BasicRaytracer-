@@ -90,5 +90,31 @@ namespace Raytracing
                             vec1.z * vec2.x - vec1.x * vec2.z,
                             vec1.x * vec2.y - vec1.y * vec2.x);
         }
+        public static Vec3 RandomUnitVector()
+        {
+            while (true) // hangs program
+            {
+                Vec3 p = Util.Random(-1, 1);
+                double lensq = p.LengthSquared();
+                if (lensq <= 1)
+                {
+                }
+                return p / Math.Sqrt(lensq);
+                
+                
+            }
+        }
+        public static Vec3 RandomOnHemisphere(Vec3 normal)
+        {
+            Vec3 onUnitSphere = RandomUnitVector();
+            if (Vec3.Dot(onUnitSphere, normal) > 0)
+            {
+                return onUnitSphere;
+            }
+            else
+            {
+                return 0 - onUnitSphere;
+            }
+        }
     }
 }

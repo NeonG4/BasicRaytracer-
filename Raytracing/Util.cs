@@ -19,11 +19,19 @@ namespace Raytracing
         }
         public static double RandomDouble()
         {
-            return rand.Next(0, 10000000) / 10000000;
+            return rand.NextDouble();
         }
         public static double RandomDouble(double min, double max)
         {
             return min + (max - min) * RandomDouble(); 
+        }
+        public static Vec3 Random()
+        {
+            return new Vec3(RandomDouble(), RandomDouble(), RandomDouble());
+        }
+        public static Vec3 Random(double min, double max)
+        {
+            return new Vec3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max));
         }
     }
 }

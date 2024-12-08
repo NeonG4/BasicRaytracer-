@@ -25,6 +25,7 @@ namespace Raytracing
         double viewportWidth;
         double focalLength;
         public Vec3 center;
+        int maxDepth;
         Vec3 viewportU;
         Vec3 viewportV;
         Vec3 pixelDeltaU;
@@ -52,6 +53,7 @@ namespace Raytracing
             pixel00Loc = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
             samplesPerPixel = 100;
             pixelSamplesScale = 1 / samplesPerPixel;
+            maxDepth = 10;
         }
         public void Render(Hittable world, PaintEventArgs e)
         {
@@ -66,18 +68,23 @@ namespace Raytracing
                     for (int sample = 0; sample < samplesPerPixel; sample++)
                     {
                         r = GetRay(i, j);
-                        pixelColor += rayColor(r, world); 
+                        pixelColor += RayColor(r, maxDepth, world); 
                     }
                     DrawColor(pixelColor / samplesPerPixel, i, j, e);
                 }
             }
         }
-        private Vec3 rayColor(Ray r, Hittable world)
+        private Vec3 RayColor(Ray r, int depth, Hittable world)
         {
-            HitRecord rec;
-            if (world.Hit(r, new Interval(0, INFINITY), out rec))
+            if (depth <= 0)
             {
-                return 0.5 * (rec.normal + new Vec3(1, 1, 1));
+                return new Vec3(0, 0, 0);
+            }
+            HitRecord rec;
+            if (world.Hit(r, new Interval(0.001, INFINITY), out rec))
+            {
+                Vec3 direction = Vec3.RandomOnHemisphere(rec.normal);
+                return 0.5 * RayColor(new Ray(rec.p, direction), depth - 1, world);
             }
             Vec3 unitDirection = Vec3.Unit(r.direction);
             double a = 0.5 * (unitDirection.y + 1);
