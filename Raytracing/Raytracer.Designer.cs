@@ -32,10 +32,11 @@
             // 
             // Raytracer
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1160, 979);
-            DoubleBuffered = true; // shows a visual drawing instead of taking 12 years to draw the entire thing
+            ClientSize = new Size(867, 532);
+            DoubleBuffered = true;
+            Margin = new Padding(2, 2, 2, 2);
             Name = "Raytracer";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Raytracer";

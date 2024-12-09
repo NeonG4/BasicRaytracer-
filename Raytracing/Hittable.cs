@@ -9,7 +9,7 @@ namespace Raytracing
         public Vec3 p; 
         public Vec3 normal;
         public double t;
-        bool frontFace;
+        public bool frontFace;
         public void SetFaceNormal(Ray r, Vec3 outwardNormal) // outwardNormal has unit length
         {
             frontFace = Vec3.Dot(r.direction, outwardNormal) < 0;
@@ -33,9 +33,10 @@ namespace Raytracing
         Material mat;
         public Vec3 center;
         public double radius;
-        public Sphere(Vec3 center, double radius)
+        public Sphere(Vec3 center, double radius, Material mat)
         {
             this.center = center;
+            this.mat = mat;
             this.radius = radius;
             if (radius < 0) // check code for circles with radius of less than zero
             {

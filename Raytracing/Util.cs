@@ -13,9 +13,9 @@ namespace Raytracing
     public class Util
     { 
         static Random rand = new Random();
-        public static double DegreesToRadians(double degrees, double radians)
+        public static double DegreesToRadians(double degrees)
         {
-            return degrees *  Raytracer.PI / 180;
+            return ((degrees *  Math.PI) / 180);
         }
         public static double RandomDouble()
         {

@@ -69,6 +69,10 @@ namespace Raytracing
         {
             return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
         }
+        public static Vec3 operator *(Vec3 vec1, Vec3 vec2)
+        {
+            return new Vec3(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z);
+        }
         // length
         public double LengthSquared()
         {
@@ -92,17 +96,9 @@ namespace Raytracing
         }
         public static Vec3 RandomUnitVector()
         {
-            while (true) // hangs program
-            {
-                Vec3 p = Util.Random(-1, 1);
-                double lensq = p.LengthSquared();
-                if (lensq <= 1)
-                {
-                }
-                return p / Math.Sqrt(lensq);
-                
-                
-            }
+            Vec3 p = Util.Random(-1, 1);
+            double lensq = p.LengthSquared();
+            return p / Math.Sqrt(lensq);
         }
         public static Vec3 RandomOnHemisphere(Vec3 normal)
         {
@@ -120,6 +116,29 @@ namespace Raytracing
         {
             var s = 1e-8;
             return (Math.Abs(this.x) < s) && (Math.Abs(this.y) < s) && (Math.Abs(this.z) < s);
+        }
+        public static Vec3 Reflect(Vec3 v, Vec3 n)
+        {
+            return v - 2 * Vec3.Dot(v, n) * n;
+        }
+        public static Vec3 Refract(Vec3 uv, Vec3 n, double etaiOverEtat)
+        {
+            double cosTheta = Math.Min(Vec3.Dot(0 - uv, n), 1);
+            Vec3 rOutPerp = etaiOverEtat * (uv + cosTheta * n);
+            Vec3 rOutParellel = 0 - Math.Sqrt(Math.Abs(1 - rOutPerp.LengthSquared())) * n;
+            return rOutPerp + rOutParellel;
+        }
+        public static Vec3 RandomInUnitDisk()
+        {
+            Vec3 p;
+            while (true)
+            {
+                p = new Vec3(Util.RandomDouble(), Util.RandomDouble(), 0);
+                if (p.LengthSquared() < 1)
+                { }
+                    return p;
+                
+            }
         }
     }
 }
