@@ -17,7 +17,7 @@ namespace Raytracing
         HittableList world = new HittableList();
         Camera cam = new Camera();
 
-        public int resolution = 1;
+        public int resolution = 2;
         public void SetVariables()
         {
             // World Setup
@@ -84,7 +84,9 @@ namespace Raytracing
 
             Material material3 = new Metal(new Vec3(0.7, 0.6, 0.5), 0.0);
             world.Add(new Sphere(new Vec3(4, 1, 0), 1, material3));
-            
+
+            //world = new HittableList(new BVHNode(world));
+
             cam.aspectRatio = 16.00 / 9.00;
             cam.imageWidth = 400;
             cam.samplesPerPixel = 10;

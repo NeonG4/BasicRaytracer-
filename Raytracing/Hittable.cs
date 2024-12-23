@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using System.Windows.Forms.VisualStyles;
 
 namespace Raytracing
 {   
@@ -27,6 +28,8 @@ namespace Raytracing
     public abstract class Hittable
     {
         public abstract bool Hit(Ray r, Interval rayT, out HitRecord rec);
+
+        public AABB BoundingBox;
     }
     // sphere hittable class
     public class Sphere : Hittable
@@ -34,16 +37,24 @@ namespace Raytracing
         Material mat;
         public double radius;
         private Ray center;
-        public Sphere(Vec3 center, double radius, Material mat)
+        public AABB bbox;
+        // stationary sphere
+        public Sphere(Vec3 staticCenter, double radius, Material mat)
         {
-            this.center = new Ray(center, new Vec3(0, 0, 0));
+            this.center = new Ray(staticCenter, new Vec3(0, 0, 0));
             this.mat = mat;
             this.radius = radius;
             if (radius < 0) // check code for circles with radius of less than zero
             {
                 this.radius = 0;
             }
+            Vec3 rvec = new Vec3(radius, radius, radius);
+            AABB box1 = new AABB(center.at(0) - rvec, center.at(0) + rvec);
+            AABB box2 = new AABB(center.at(1) - rvec, center.at(1) + rvec);
+            this.bbox = new AABB(box1, box2);
+            BoundingBox = bbox;
         }
+        // moving sphere
         public Sphere(Vec3 center1, Vec3 center2, double radius, Material mat)
         {
             this.center = new Ray(center1, center2 - center1);
@@ -53,6 +64,11 @@ namespace Raytracing
             {
                 this.radius = 0;
             }
+            Vec3 rvec = new Vec3(radius, radius, radius);
+            AABB box1 = new AABB(center.at(0) - rvec, center.at(0) + rvec);
+            AABB box2 = new AABB(center.at(1) - rvec, center.at(1) + rvec);
+            this.bbox = new AABB(box1, box2);
+            BoundingBox = bbox;
         }
         override public bool Hit(Ray r, Interval rayT, out HitRecord rec)
         {
@@ -93,7 +109,7 @@ namespace Raytracing
     public class HittableList : Hittable
     {
         public List<Hittable> objects = new List<Hittable>();
-
+        private AABB bbox = new AABB(new Interval(0, 1), new Interval(0, 1), new Interval(0, 1));
 
         public void Clear()
         {
@@ -102,6 +118,8 @@ namespace Raytracing
         public void Add(Hittable obj)
         {
             objects.Add(obj);
+            bbox = new AABB(bbox, obj.BoundingBox);
+            bbox = new AABB(bbox, obj.BoundingBox);
         }
         override public bool Hit(Ray r, Interval rayT, out HitRecord rec)
         {

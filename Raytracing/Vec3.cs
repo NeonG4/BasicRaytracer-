@@ -14,11 +14,13 @@ namespace Raytracing
     {
         // Vector class
         public double x, y, z;
+        public double[] e;
         public Vec3(double xi, double yi, double zi)
         {
             x = xi;
             y = yi;
             z = zi;
+            e = [x, y, z];
         }
         // addition operator overloads
         public static Vec3 operator +(Vec3 vec1, Vec3 vec2)

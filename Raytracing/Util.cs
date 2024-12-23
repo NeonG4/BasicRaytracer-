@@ -41,5 +41,9 @@ namespace Raytracing
             }
             return 0;
         }
+        public static int RandomInt(int min, int max)
+        {
+            return (int)Util.RandomDouble(min, max);
+        }
     }
 }
