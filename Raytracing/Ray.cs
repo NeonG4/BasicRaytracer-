@@ -10,10 +10,18 @@ namespace Raytracing
     {
         public Vec3 point;
         public Vec3 direction;
+        public double time;
+        public Ray(Vec3 point, Vec3 direction, double time)
+        {
+            this.point = point;
+            this.direction = direction;
+            this.time = time;
+        }
         public Ray(Vec3 point, Vec3 direction)
         {
             this.point = point;
             this.direction = direction;
+            this.time = 0;
         }
         public Vec3 at(double t)
         {

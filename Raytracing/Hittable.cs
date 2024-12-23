@@ -28,14 +28,25 @@ namespace Raytracing
     {
         public abstract bool Hit(Ray r, Interval rayT, out HitRecord rec);
     }
+    // sphere hittable class
     public class Sphere : Hittable
     {
         Material mat;
-        public Vec3 center;
         public double radius;
+        private Ray center;
         public Sphere(Vec3 center, double radius, Material mat)
         {
-            this.center = center;
+            this.center = new Ray(center, new Vec3(0, 0, 0));
+            this.mat = mat;
+            this.radius = radius;
+            if (radius < 0) // check code for circles with radius of less than zero
+            {
+                this.radius = 0;
+            }
+        }
+        public Sphere(Vec3 center1, Vec3 center2, double radius, Material mat)
+        {
+            this.center = new Ray(center1, center2 - center1);
             this.mat = mat;
             this.radius = radius;
             if (radius < 0) // check code for circles with radius of less than zero
@@ -45,7 +56,8 @@ namespace Raytracing
         }
         override public bool Hit(Ray r, Interval rayT, out HitRecord rec)
         {
-            Vec3 oc = this.center - r.point;
+            Vec3 currentCenter = center.at(r.time);
+            Vec3 oc = currentCenter - r.point;
             double a = r.direction.LengthSquared();
             double h = Vec3.Dot(r.direction, oc);
             double c = oc.LengthSquared() - radius * radius;
@@ -71,9 +83,10 @@ namespace Raytracing
             rec = new HitRecord();
             rec.t = root;
             rec.p = r.at(rec.t);
-            rec.mat = mat;
-            Vec3 outwardNormal = (rec.p - center) / radius;
+            Vec3 outwardNormal = (rec.p - currentCenter) / radius;
             rec.SetFaceNormal(r, outwardNormal);
+            
+            rec.mat = mat;
             return true;
         }
     }

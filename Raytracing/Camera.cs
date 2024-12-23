@@ -135,7 +135,8 @@ namespace Raytracing
             Vec3 pixelSample = pixel00Loc + ((x + offset.x) * pixelDeltaU) + ((y + offset.y) * pixelDeltaV);
             Vec3 rayOrigin = (defocusAngle <= 0) ? center : DefocusDiskSample();
             Vec3 rayDirection = pixelSample - rayOrigin;
-            return new Ray(rayOrigin, rayDirection);
+            double rayTime = Util.RandomDouble();
+            return new Ray(rayOrigin, rayDirection, rayTime);
         }
         private Vec3 DefocusDiskSample()
         {

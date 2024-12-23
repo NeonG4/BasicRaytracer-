@@ -22,7 +22,7 @@ namespace Raytracing
         {
             this.albedo = albedo;            
         }
-        override public bool Scatter(Ray r, HitRecord rec, out Vec3 attenuation, out Ray scattered)
+        override public bool Scatter(Ray rIn, HitRecord rec, out Vec3 attenuation, out Ray scattered)
         {
             Vec3 scatterDirection = rec.normal + Vec3.RandomUnitVector();
             if (scatterDirection.NearZero())
@@ -30,7 +30,7 @@ namespace Raytracing
                 scatterDirection = rec.normal;
             }
 
-            scattered = new Ray(rec.p, scatterDirection);
+            scattered = new Ray(rec.p, scatterDirection, rIn.time);
             attenuation = albedo;
             return true;
         }
@@ -49,7 +49,7 @@ namespace Raytracing
         {
             Vec3 reflected = Vec3.Reflect(rIn.direction, rec.normal);
             reflected = Vec3.Unit(reflected) + (fuzz * Vec3.RandomUnitVector());
-            scattered = new Ray(rec.p, reflected);
+            scattered = new Ray(rec.p, reflected, rIn.time);
             attenuation = this.albedo;
             return Vec3.Dot(scattered.direction, rec.normal) > 0;
         }
@@ -82,7 +82,7 @@ namespace Raytracing
                 direction = Vec3.Refract(unitDirection, rec.normal, ri);
             }
 
-            scattered = new Ray(rec.p, direction);
+            scattered = new Ray(rec.p, direction, rIn.time);
             return true;
         }
         private static double Reflectance(double cosine, double refractionIndex)

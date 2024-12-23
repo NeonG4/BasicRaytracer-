@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-// tutorial is from https://raytracing.github.io/books/RayTracingInOneWeekend
+// tutorial is from https://raytracing.github.io/ book one is completed
 namespace Raytracing
 {
     public partial class Raytracer : Form
@@ -55,7 +55,8 @@ namespace Raytracing
                             // difuse
                             albedo = Util.Random() * Util.Random();
                             sphereMaterial = new Lambertian(albedo);
-                            world.Add(new Sphere(center, 0.2, sphereMaterial));
+                            Vec3 center2 = center + new Vec3(0, Util.RandomDouble(0, .5), 0);
+                            world.Add(new Sphere(center, center2, 0.2, sphereMaterial)); 
                         }
                         else if (chooseMat < 0.95)
                         {
@@ -83,10 +84,10 @@ namespace Raytracing
 
             Material material3 = new Metal(new Vec3(0.7, 0.6, 0.5), 0.0);
             world.Add(new Sphere(new Vec3(4, 1, 0), 1, material3));
-
+            
             cam.aspectRatio = 16.00 / 9.00;
-            cam.imageWidth = 1200;
-            cam.samplesPerPixel = 100;
+            cam.imageWidth = 400;
+            cam.samplesPerPixel = 10;
             cam.vfov = 20;
             cam.lookFrom = new Vec3(13, 2, 3);
             cam.lookAt = new Vec3(0, 0, 0);
