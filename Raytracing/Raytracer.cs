@@ -34,8 +34,9 @@ namespace Raytracing
             world.Add(new Sphere(new Vec3(-1, 0, -1), 0.4, materialBubble));
             world.Add(new Sphere(new Vec3(1, 0, -1), 0.5, materialRight));
             */
+            Texture checker = new CheckerTexture(0.32, new Vec3(0.2, 0.3, 0.1), new Vec3(0.9, 0.9, 0.9));
             Material groundMaterial = new Lambertian(new Vec3(0.5, 0.5, 0.5));
-            world.Add(new Sphere(new Vec3(0, -1000, 0), 1000, groundMaterial));
+            world.Add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(checker)));
             
             double chooseMat;
             Vec3 center;

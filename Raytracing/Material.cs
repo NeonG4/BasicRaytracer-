@@ -18,9 +18,15 @@ namespace Raytracing
     public class Lambertian : Material // solid color
     {
         private Vec3 albedo;
+        private Texture tex;
         public Lambertian(Vec3 albedo)
         {
+            tex = new SolidColor(albedo);
             this.albedo = albedo;            
+        }
+        public Lambertian(Texture tex)
+        {
+            this.tex = tex;
         }
         override public bool Scatter(Ray rIn, HitRecord rec, out Vec3 attenuation, out Ray scattered)
         {
@@ -31,7 +37,7 @@ namespace Raytracing
             }
 
             scattered = new Ray(rec.p, scatterDirection, rIn.time);
-            attenuation = albedo;
+            attenuation = tex.Value(rec.u, rec.v, rec.p);
             return true;
         }
     }

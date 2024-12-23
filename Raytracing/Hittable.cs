@@ -10,6 +10,8 @@ namespace Raytracing
         public Vec3 p; 
         public Vec3 normal;
         public double t;
+        public double u;
+        public double v;
         public bool frontFace;
         public void SetFaceNormal(Ray r, Vec3 outwardNormal) // outwardNormal has unit length
         {
