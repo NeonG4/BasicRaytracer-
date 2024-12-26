@@ -18,22 +18,9 @@ namespace Raytracing
         Camera cam = new Camera();
 
         public int resolution = 2;
-        public void SetVariables()
+        public void BouncingSpheres()
         {
             // World Setup
-            /*
-            Material materialGround = new Lambertian(new Vec3(0.8, 0.8, 0.0));
-            Material materialCenter = new Lambertian(new Vec3(0.1, 0.2, 0.5));
-            Material materialLeft = new Dielectric(1.5);
-            Material materialBubble = new Dielectric(1.00 / 1.50);
-            Material materialRight = new Metal(new Vec3(0.8, 0.6, 0.2), 1);
-
-            world.Add(new Sphere(new Vec3(0, -100.5, -1), 100, materialGround));
-            world.Add(new Sphere(new Vec3(0, 0, -1.2), 0.5, materialCenter));
-            world.Add(new Sphere(new Vec3(-1, 0, -1), 0.5, materialLeft));
-            world.Add(new Sphere(new Vec3(-1, 0, -1), 0.4, materialBubble));
-            world.Add(new Sphere(new Vec3(1, 0, -1), 0.5, materialRight));
-            */
             Texture checker = new CheckerTexture(0.32, new Vec3(0.2, 0.3, 0.1), new Vec3(0.9, 0.9, 0.9));
             Material groundMaterial = new Lambertian(new Vec3(0.5, 0.5, 0.5));
             world.Add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(checker)));
@@ -86,8 +73,6 @@ namespace Raytracing
             Material material3 = new Metal(new Vec3(0.7, 0.6, 0.5), 0.0);
             world.Add(new Sphere(new Vec3(4, 1, 0), 1, material3));
 
-            //world = new HittableList(new BVHNode(world));
-
             cam.aspectRatio = 16.00 / 9.00;
             cam.imageWidth = 400;
             cam.samplesPerPixel = 10;
@@ -98,13 +83,30 @@ namespace Raytracing
             cam.defocusAngle = 0.6;
             cam.focusDist = 10.0;
         }
+        public void CheckeredSpheres()
+        {
+            Texture checker = new CheckerTexture(0.32, new Vec3(.2, .3, .1), new Vec3(.9, .9, .9));
+
+            world.Add(new Sphere(new Vec3(0, -10, 0), 10, new Lambertian(checker)));
+            world.Add(new Sphere(new Vec3(0, 10, 0), 10, new Lambertian(checker)));
+
+            cam.aspectRatio = 16.00 / 9.00;
+            cam.imageWidth = 400;
+            cam.samplesPerPixel = 10;
+            
+            cam.vfov = 20;
+            cam.lookFrom = new Vec3(13, 2, 3);
+            cam.lookAt = new Vec3(0, 0, 0);
+            cam.vup = new Vec3(0, 1, 0);
+            cam.defocusAngle = 0;
+        }
         public Raytracer()
         {
             InitializeComponent();
         }
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            SetVariables();
+            CheckeredSpheres();
             cam.Render(world, e, resolution);
         }
     }

@@ -14,34 +14,36 @@ namespace Raytracing
     }
     public class SolidColor : Texture
     {
-        private Vec3 Albedo;
+        private Vec3 albedo;
         public SolidColor(Vec3 albedo)
         {
-            this.Albedo = albedo;
+            this.albedo = albedo;
         }
         public SolidColor(double red, double green, double blue)
         {
-            this.Albedo = new Vec3(red, green, blue);
+            this.albedo = new Vec3(red, green, blue);
         }
         public override Vec3 Value(double u, double v, Vec3 p)
         {
-            return Albedo;
+            return albedo;
         }
     }
     public class CheckerTexture : Texture
     {
         private double invScale;
-        private Texture even = new SolidColor(new Vec3(0, 0, 0));
-        private Texture odd = new SolidColor(new Vec3(1, 1, 1));
-        public CheckerTexture(double scale, Texture even, Texture odd)
+        Texture even = new SolidColor(new Vec3(0, 0, 0));
+        Texture odd = new SolidColor(new Vec3(1, 1, 1));
+        public CheckerTexture(double scale, Texture evenIn, Texture oddIn)
         {
             this.invScale = 1 / scale;
-            this.even = even;
-            this.odd = odd;
+            this.even = evenIn;
+            this.odd = oddIn;
         }
         public CheckerTexture(double scale, Vec3 c1, Vec3 c2)
         {
-            new CheckerTexture(scale, new SolidColor(c1), new SolidColor(c2));
+            this.invScale = 1 / scale;
+            this.even = new SolidColor(c1);
+            this.odd = new SolidColor(c2);
         }
         public override Vec3 Value(double u, double v, Vec3 p)
         {
@@ -51,7 +53,7 @@ namespace Raytracing
             
             bool isEven = (xInterger + yInterger + zInterger) % 2 == 0;
 
-            return isEven ? this.even.Value(u, v, p) : this.odd.Value(u, v, p);
+            return isEven ? this.even.Value(u, v, p) : this.odd.Value(u, v, p); // this.even and this.odd are default values
         }
     }
 }
