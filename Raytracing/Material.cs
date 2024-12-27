@@ -118,7 +118,7 @@ namespace Raytracing
         {
             this.tex = new SolidColor(emit);
         }
-        public Vec3 Emitted(double u, double v, Vec3 p)
+        public override Vec3 ColorEmitted(double u, double v, Vec3 p)
         {
             return tex.Value(u, v, p);
         }

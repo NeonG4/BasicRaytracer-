@@ -100,9 +100,10 @@ namespace Raytracing
                 return new Vec3(0, 0, 0);
             }
             HitRecord rec;
+
             if (!world.Hit(r, new Interval(0.001, INFINITY), out rec))
             {
-                return background;
+                return this.background;
             }
             
             Ray scattered;

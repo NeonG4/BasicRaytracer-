@@ -176,6 +176,7 @@ namespace Raytracing
 
             var difflight = new DifuseLight(new Vec3(4, 4, 4));
             world.Add(new Quad(new Vec3(3, 1, -2), new Vec3(2, 0, 0), new Vec3(0, 2, 0), difflight));
+            world.Add(new Sphere(new Vec3(0, 7, 0), 2, difflight));
 
             cam.aspectRatio = 16.0 / 9.0;
             cam.imageWidth = 400;
@@ -188,13 +189,39 @@ namespace Raytracing
             cam.vup = new Vec3(0, 1, 0);
             cam.defocusAngle = 0;
         }
+        void CornellBox()
+        {
+            Lambertian red = new Lambertian(new Vec3(0.65, 0.05, 0.05));
+            Lambertian white = new Lambertian(new Vec3(0.73, 0.73, 0.73));
+            Lambertian green = new Lambertian(new Vec3(0.12, 0.45, 0.15));
+            DifuseLight light = new DifuseLight(new Vec3(15, 15, 15));
+
+            world.Add(new Quad(new Vec3(555, 0, 0), new Vec3(0, 555, 0), new Vec3(0, 0, 555), green));
+            world.Add(new Quad(new Vec3(0, 0, 0), new Vec3(0, 555, 0), new Vec3(0, 0, 555), red));
+            world.Add(new Quad(new Vec3(343, 554, 332), new Vec3(-130, 0, 0), new Vec3(0, 0, -105), light));
+            world.Add(new Quad(new Vec3(0, 0, 0), new Vec3(555, 0, 0), new Vec3(0, 0, 555), white));
+            world.Add(new Quad(new Vec3(555, 555, 555), new Vec3(-555, 0, 0), new Vec3(0, 0, -555), white));
+            world.Add(new Quad(new Vec3(0, 0, 555), new Vec3(555, 0, 0), new Vec3(0, 555, 0), white));
+            
+            cam.aspectRatio = 1.0;
+            cam.imageWidth = 600;
+            cam.samplesPerPixel = 100;
+            cam.background = new Vec3(0, 0, 0);
+            
+            cam.vfov = 40;
+            cam.lookFrom = new Vec3(278, 278, -800);
+            cam.lookAt = new Vec3(278, 278, 0);
+            cam.vup = new Vec3(0, 1, 0);
+
+            cam.defocusAngle = 0;
+        }
         public Raytracer()
         {
             InitializeComponent();
         }
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            switch(5)
+            switch(6)
             {
                 case 0: BouncingSpheres(); break;
                 case 1: CheckeredSpheres(); break;
@@ -202,6 +229,7 @@ namespace Raytracing
                 case 3: PerlinSpheres(); break;
                 case 4: Quads(); break;
                 case 5: SimpleLight(); break;
+                case 6: CornellBox(); break;
             }
             cam.Render(world, e, resolution);
         }
