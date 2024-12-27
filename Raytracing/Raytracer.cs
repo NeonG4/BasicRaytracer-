@@ -17,7 +17,7 @@ namespace Raytracing
         HittableList world = new HittableList();
         Camera cam = new Camera();
 
-        public int resolution = 2;
+        public int resolution = 1;
         public void BouncingSpheres()
         {
             // World Setup
@@ -137,18 +137,43 @@ namespace Raytracing
 
             cam.defocusAngle = 0;
         }
+        void Quads()
+        {
+            Lambertian leftRed = new Lambertian(new Vec3(1.0, 0.2, 0.2));
+            Lambertian backGreen = new Lambertian(new Vec3(0.2, 1.0, 0.2));
+            Lambertian rightBlue = new Lambertian(new Vec3(0.2, 0.2, 1.0));
+            Lambertian upperOrange = new Lambertian(new Vec3(1.0, 0.5, 0.0));
+            Lambertian lowerTeal = new Lambertian(new Vec3(0.2, 0.8, 0.8));
+            world.Add(new Quad(new Vec3(-3, -2, 5), new Vec3(0, 0, -4), new Vec3(0, 4, 0), leftRed));
+            world.Add(new Quad(new Vec3(-2, -2, 0), new Vec3(4, 0, 0), new Vec3(0, 4, 0), backGreen));
+            world.Add(new Quad(new Vec3(3, -2, 1), new Vec3(0, 0, 4), new Vec3(0, 4, 0), rightBlue));
+            world.Add(new Quad(new Vec3(-2, 3, 1), new Vec3(4, 0, 0), new Vec3(0, 0, 4), upperOrange));
+            world.Add(new Quad(new Vec3(-2, -3, 5), new Vec3(4, 0, 0), new Vec3(0, 0, -4), lowerTeal));
+
+            cam.aspectRatio = 1.00;
+            cam.imageWidth = 400;
+            cam.samplesPerPixel = 10;
+            
+            cam.vfov = 80; 
+            cam.lookFrom = new Vec3(0, 0, 9);
+            cam.lookAt = new Vec3(0, 0, 0);
+            cam.vup = new Vec3(0, 1, 0);
+            
+            cam.defocusAngle = 0;
+        }
         public Raytracer()
         {
             InitializeComponent();
         }
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            switch(3)
+            switch(4)
             {
                 case 0: BouncingSpheres(); break;
                 case 1: CheckeredSpheres(); break;
                 case 2: Earth(); break;
                 case 3: PerlinSpheres(); break;
+                case 4: Quads(); break;
             }
             cam.Render(world, e, resolution);
         }

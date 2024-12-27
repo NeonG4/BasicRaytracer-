@@ -17,18 +17,21 @@ namespace Raytracing
             this.x = x;
             this.y = y;
             this.z = z;
+            PadToMinimums();
         }
         public AABB(Vec3 a, Vec3 b)
         {
             x = (a.x <= b.x) ? new Interval(a.x, b.x) : new Interval(b.x, a.x);
             y = (a.y <= b.y) ? new Interval(a.y, b.y) : new Interval(b.y, a.y);
             z = (a.z <= b.z) ? new Interval(a.z, b.z) : new Interval(b.z, a.z);
+
+            PadToMinimums();
         }
         public AABB(AABB box0, AABB box1)
         {
-            x = new Interval(box0.x, box1.x);
-            y = new Interval(box0.y, box1.y);
-            z = new Interval(box0.z, box1.z);
+            this.x = new Interval(box0.x, box1.x);
+            this.y = new Interval(box0.y, box1.y);
+            this.z = new Interval(box0.z, box1.z);
         }
         public Interval AxisInterval(int n)
         {
@@ -71,6 +74,13 @@ namespace Raytracing
                 }    
             }
             return true;
+        }
+        private void PadToMinimums()
+        {
+            double delta = 0.0001;
+            if (x.Size() < delta) this.x = x.Expand(delta);
+            if (y.Size() < delta) this.y = y.Expand(delta);
+            if (z.Size() < delta) this.z = z.Expand(delta);
         }
     }
     public class BVHNode : Hittable

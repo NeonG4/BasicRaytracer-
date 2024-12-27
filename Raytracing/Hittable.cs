@@ -117,6 +117,83 @@ namespace Raytracing
             v = theta / Math.PI;
         }
     }
+    public class Quad : Hittable
+    {
+        private Vec3 q;
+        private Vec3 u, v;
+        private Material mat;
+        private AABB bbox;
+        private Vec3 normal;
+        private Vec3 w;
+        private double d;
+        public Quad(Vec3 q, Vec3 u, Vec3 v, Material mat)
+        {
+            this.q = q;
+            this.u = u;
+            this.v = v;
+            this.mat = mat;
+
+            Vec3 n = Vec3.Cross(u, v);
+            normal = Vec3.Unit(n);
+            d = Vec3.Dot(normal, q);
+            w = n / Vec3.Dot(n, n);
+
+
+            this.SetBoundingBox();
+            BoundingBox = bbox;
+        }
+        public void SetBoundingBox()
+        {
+            AABB bboxDiagonal1 = new AABB(q, q + u + v);
+            AABB bboxDiagonal2 = new AABB(q + u, q + v);
+            this.bbox = new AABB(bboxDiagonal1, bboxDiagonal2);
+        }
+        public override bool Hit(Ray r, Interval rayT, out HitRecord rec)
+        {
+         
+            rec = new HitRecord();
+            double denom = Vec3.Dot(normal, r.direction);
+
+            if(Math.Abs(denom) < 1e-8)
+            {
+                return false;
+            }
+            double t = (d - Vec3.Dot(normal, r.point)) / denom;
+            if (!rayT.Contains(t))
+            {
+                return false;
+            }
+            Vec3 intersection = r.at(t);
+            Vec3 planarHitPtVector = intersection - q;
+            double alpha = Vec3.Dot(w, Vec3.Cross(planarHitPtVector, v));
+            double beta = Vec3.Dot(w, Vec3.Cross(u, planarHitPtVector));
+
+            if (!IsInterior(alpha, beta, out rec))
+            {
+                return false;
+            }
+
+
+            rec.t = t;
+            rec.p = intersection;
+            rec.mat = mat;
+            rec.SetFaceNormal(r, normal);
+            return true;
+        }
+        public bool IsInterior(double a, double b, out HitRecord rec)
+        {
+            rec = new HitRecord();
+            Interval unitInterval = new Interval(0, 1);
+            if (!unitInterval.Contains(a) || !unitInterval.Contains(b))
+            {
+                return false;
+            }
+            rec.u = a;
+            rec.v = b;
+            return true;
+        }
+
+    }
     public class HittableList : Hittable
     {
         public List<Hittable> objects = new List<Hittable>();
