@@ -77,4 +77,18 @@ namespace Raytracing
             return colorScale * new Vec3(pixel.x, pixel.y, pixel.z);
         }
     }
+    public class NoiseTexture : Texture
+    {
+        private Perlin noise;
+        double scale;
+        public NoiseTexture(double scale)
+        {
+            this.noise = new Perlin();
+            this.scale = scale;
+        }
+        public override Vec3 Value(double u, double v, Vec3 p)
+        {
+            return new Vec3(0.5, 0.5, 0.5) * (1 + Math.Sin(scale * p.z) + 10 * noise.Turb(p, 7));
+        }
+    }
 }

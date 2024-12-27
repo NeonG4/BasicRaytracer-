@@ -120,13 +120,36 @@ namespace Raytracing
             cam.defocusAngle = 0;
 
         }
+        void PerlinSpheres()
+        {
+            Texture perTex = new NoiseTexture(4);
+            world.Add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(perTex)));
+            world.Add(new Sphere(new Vec3(0, 2, 0), 2, new Lambertian(perTex)));
+            
+            cam.aspectRatio = 16.0/9.0;
+            cam.imageWidth = 400;
+            cam.samplesPerPixel = 10;
+
+            cam.vfov = 20;
+            cam.lookFrom = new Vec3(13, 2, 3);
+            cam.lookAt = new Vec3(0, 0, 0);
+            cam.vup = new Vec3(0, 1, 0);
+
+            cam.defocusAngle = 0;
+        }
         public Raytracer()
         {
             InitializeComponent();
         }
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            Earth();
+            switch(3)
+            {
+                case 0: BouncingSpheres(); break;
+                case 1: CheckeredSpheres(); break;
+                case 2: Earth(); break;
+                case 3: PerlinSpheres(); break;
+            }
             cam.Render(world, e, resolution);
         }
     }
