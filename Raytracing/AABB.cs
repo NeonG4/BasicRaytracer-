@@ -29,6 +29,14 @@ namespace Raytracing
         }
         public AABB(AABB box0, AABB box1)
         {
+            if (box0 == null)
+            {
+                box0 = new AABB(new Vec3(0, 0, 0), new Vec3(1, 1, 1));
+            }
+            if (box1 == null)
+            {
+                box1 = new AABB(new Vec3(0, 0, 0), new Vec3(1, 1, 1));
+            }
             this.x = new Interval(box0.x, box1.x);
             this.y = new Interval(box0.y, box1.y);
             this.z = new Interval(box0.z, box1.z);

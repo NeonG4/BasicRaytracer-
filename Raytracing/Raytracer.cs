@@ -203,9 +203,12 @@ namespace Raytracing
             world.Add(new Quad(new Vec3(555, 555, 555), new Vec3(-555, 0, 0), new Vec3(0, 0, -555), white));
             world.Add(new Quad(new Vec3(0, 0, 555), new Vec3(555, 0, 0), new Vec3(0, 555, 0), white));
             
+            world.Add(Quad.Box(new Vec3(130, 0, 65), new Vec3(295, 165, 230), white));
+            world.Add(Quad.Box(new Vec3(265, 0, 295), new Vec3(430, 330, 460), white));
+            
             cam.aspectRatio = 1.0;
             cam.imageWidth = 600;
-            cam.samplesPerPixel = 100;
+            cam.samplesPerPixel = 10;
             cam.background = new Vec3(0, 0, 0);
             
             cam.vfov = 40;

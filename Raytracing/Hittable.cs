@@ -1,5 +1,6 @@
 ﻿using System.CodeDom;
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Reflection;
 using System.Windows.Forms.VisualStyles;
 
@@ -122,7 +123,7 @@ namespace Raytracing
         private Vec3 q;
         private Vec3 u, v;
         private Material mat;
-        private AABB bbox;
+        private AABB bbox = new AABB(new Vec3(0, 0, 0), new Vec3(1, 1, 1));
         private Vec3 normal;
         private Vec3 w;
         private double d;
@@ -138,9 +139,8 @@ namespace Raytracing
             d = Vec3.Dot(normal, q);
             w = n / Vec3.Dot(n, n);
 
-
             this.SetBoundingBox();
-            BoundingBox = bbox;
+            this.BoundingBox = bbox;
         }
         public void SetBoundingBox()
         {
@@ -192,7 +192,26 @@ namespace Raytracing
             rec.v = b;
             return true;
         }
+        public static HittableList Box(Vec3 a, Vec3 b, Material mat)
+        {
+            HittableList sides = new HittableList();
+            
+            Vec3 min = new Vec3(Math.Min(a.x, b.x), Math.Min(a.y, b.y), Math.Min(a.z, b.z));
+            Vec3 max = new Vec3(Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
+            
+            Vec3 dx = new Vec3(max.x - min.x, 0, 0);
+            Vec3 dy = new Vec3(0, max.y - min.y, 0);
+            Vec3 dz = new Vec3(0, 0, max.z - min.z);
 
+            sides.Add(new Quad(new Vec3(min.x, min.y, max.z), dx, dy, mat)); // front
+            sides.Add(new Quad(new Vec3(max.x, min.y, max.z), 0-dz, dy, mat)); // right
+            sides.Add(new Quad(new Vec3(max.x, min.y, min.z), 0-dx, dy, mat)); // back
+            sides.Add(new Quad(new Vec3(min.x, min.y, min.z), dz, dy, mat)); // left
+            sides.Add(new Quad(new Vec3(min.x, max.y, max.z), dx, 0-dz, mat)); // top
+            sides.Add(new Quad(new Vec3(min.x, min.y, min.z), dx, dz, mat)); // bottom
+            
+            return sides;
+        }
     }
     public class HittableList : Hittable
     {
@@ -206,7 +225,6 @@ namespace Raytracing
         public void Add(Hittable obj)
         {
             objects.Add(obj);
-            bbox = new AABB(bbox, obj.BoundingBox);
             bbox = new AABB(bbox, obj.BoundingBox);
         }
         override public bool Hit(Ray r, Interval rayT, out HitRecord rec)
