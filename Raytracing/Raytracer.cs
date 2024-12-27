@@ -100,13 +100,33 @@ namespace Raytracing
             cam.vup = new Vec3(0, 1, 0);
             cam.defocusAngle = 0;
         }
+        void Earth()
+        {
+            Texture earthTexture = new ImageTexture("earthmap.jpg");
+            var earthSurface = new Lambertian(earthTexture);
+            Sphere globe = new Sphere(new Vec3(0, 0, 0), 2, earthSurface);
+
+            world.Add(globe);
+            cam.aspectRatio = 16.0/9.0;
+            cam.imageWidth = 400;
+            cam.imageHeight = 100;
+            
+            cam.vfov = 20;
+            cam.lookFrom = new Vec3(0, 0, 12);
+            cam.lookAt = new Vec3(0, 0, 0);
+            cam.vup = new Vec3(0, 1, 0);
+
+            cam.samplesPerPixel = 10;
+            cam.defocusAngle = 0;
+
+        }
         public Raytracer()
         {
             InitializeComponent();
         }
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            CheckeredSpheres();
+            Earth();
             cam.Render(world, e, resolution);
         }
     }

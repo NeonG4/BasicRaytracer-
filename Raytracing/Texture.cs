@@ -56,4 +56,25 @@ namespace Raytracing
             return isEven ? this.even.Value(u, v, p) : this.odd.Value(u, v, p); // this.even and this.odd are default values
         }
     }
+    public class ImageTexture : Texture
+    {
+        RTWImage imageTexture;
+        public ImageTexture(string fileName)
+        {
+            imageTexture = new RTWImage(fileName);
+        }
+        public override Vec3 Value(double u, double v, Vec3 p)
+        {
+            if (imageTexture.imageHeight <= 0) return new Vec3(0, 1, 1);
+            u = new Interval(0, 1).Clamp(u);
+            v = 1.0 - new Interval(0, 1).Clamp(v);
+
+            int i = (int) (u * imageTexture.imageWidth);
+            int j = (int) (v * imageTexture.imageHeight);
+            var pixel = imageTexture.PixelData(i, j);
+
+            double colorScale = 1.0 / 255.0;
+            return colorScale * new Vec3(pixel.x, pixel.y, pixel.z);
+        }
+    }
 }

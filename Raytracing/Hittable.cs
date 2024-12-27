@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.CodeDom;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms.VisualStyles;
 
@@ -103,9 +104,17 @@ namespace Raytracing
             rec.p = r.at(rec.t);
             Vec3 outwardNormal = (rec.p - currentCenter) / radius;
             rec.SetFaceNormal(r, outwardNormal);
-            
+            getSphereUV(outwardNormal, out rec.u, out rec.v);
             rec.mat = mat;
             return true;
+        }
+        static void getSphereUV(Vec3 p, out double u, out double v)
+        {
+            double theta = Math.Acos(-p.y);
+            double phi = Math.Atan2(-p.z, p.x) + Math.PI;
+
+            u = phi / (2 * Math.PI);
+            v = theta / Math.PI;
         }
     }
     public class HittableList : Hittable
