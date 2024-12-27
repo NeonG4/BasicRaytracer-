@@ -25,6 +25,7 @@ namespace Raytracing
         double viewportWidth;
         double focalLength;
         public Vec3 center;
+        public Vec3 background;
         int maxDepth;
         Vec3 viewportU;
         Vec3 viewportV;
@@ -99,19 +100,22 @@ namespace Raytracing
                 return new Vec3(0, 0, 0);
             }
             HitRecord rec;
-            if (world.Hit(r, new Interval(0.001, INFINITY), out rec))
+            if (!world.Hit(r, new Interval(0.001, INFINITY), out rec))
             {
-                Ray scattered;
-                Vec3 attenuation = new Vec3(0, 0, 0);
-                if (rec.mat.Scatter(r, rec, out attenuation, out scattered))
-                {
-                    return attenuation * RayColor(scattered, depth - 1, world);
-                }
-                return new Vec3(0, 0, 0);
+                return background;
             }
-            Vec3 unitDirection = Vec3.Unit(r.direction);
-            double a = 0.5 * (unitDirection.y + 1);
-            return (1 - a) * new Vec3(1, 1, 1) + a * new Vec3(0.5, 0.7, 1);
+            
+            Ray scattered;
+            Vec3 attenuation;
+            Vec3 colorFromEmission = rec.mat.ColorEmitted(rec.u, rec.v, rec.p);
+            
+            if (!rec.mat.Scatter(r, rec, out attenuation, out scattered))
+            {
+                return colorFromEmission;
+            }
+            Vec3 colorFromScatter = attenuation * RayColor(scattered, depth-1, world);
+
+            return colorFromEmission + colorFromScatter;
         }
         private void DrawColor(Vec3 color, double x, double y, PaintEventArgs e, int resolution)
         {
@@ -143,5 +147,6 @@ namespace Raytracing
             Vec3 p = Vec3.RandomInUnitDisk();
             return center + (p.x * defocusDiskU) + (p.y * defocusDiskV);
         }
+
     }
 }

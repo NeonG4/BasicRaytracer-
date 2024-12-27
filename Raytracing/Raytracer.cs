@@ -16,6 +16,7 @@ namespace Raytracing
         public const double PI = Math.PI;
         HittableList world = new HittableList();
         Camera cam = new Camera();
+        
 
         public int resolution = 1;
         public void BouncingSpheres()
@@ -82,6 +83,8 @@ namespace Raytracing
             cam.vup = new Vec3(0, 1, 0);
             cam.defocusAngle = 0.6;
             cam.focusDist = 10.0;
+            
+            cam.background = new Vec3(0.7, 0.8, 1.0);
         }
         public void CheckeredSpheres()
         {
@@ -99,6 +102,7 @@ namespace Raytracing
             cam.lookAt = new Vec3(0, 0, 0);
             cam.vup = new Vec3(0, 1, 0);
             cam.defocusAngle = 0;
+            cam.background = new Vec3(0.7, 0.8, 1.0);
         }
         void Earth()
         {
@@ -119,6 +123,7 @@ namespace Raytracing
             cam.samplesPerPixel = 10;
             cam.defocusAngle = 0;
 
+            cam.background = new Vec3(0.7, 0.8, 1.0);
         }
         void PerlinSpheres()
         {
@@ -136,6 +141,7 @@ namespace Raytracing
             cam.vup = new Vec3(0, 1, 0);
 
             cam.defocusAngle = 0;
+            cam.background = new Vec3(0.7, 0.8, 1.0);
         }
         void Quads()
         {
@@ -160,6 +166,27 @@ namespace Raytracing
             cam.vup = new Vec3(0, 1, 0);
             
             cam.defocusAngle = 0;
+            cam.background = new Vec3(0.7, 0.8, 1.0);
+        }
+        void SimpleLight()
+        {
+            var pertex = new NoiseTexture(4);
+            world.Add(new Sphere(new Vec3(0, -1000, 0), 1000, new Lambertian(pertex)));
+            world.Add(new Sphere(new Vec3(0, 2, 0), 2, new Lambertian(pertex)));
+
+            var difflight = new DifuseLight(new Vec3(4, 4, 4));
+            world.Add(new Quad(new Vec3(3, 1, -2), new Vec3(2, 0, 0), new Vec3(0, 2, 0), difflight));
+
+            cam.aspectRatio = 16.0 / 9.0;
+            cam.imageWidth = 400;
+            cam.samplesPerPixel = 10;
+            cam.background = new Vec3(0, 0, 0);
+
+            cam.vfov = 20;
+            cam.lookFrom = new Vec3(26, 3, 6);
+            cam.lookAt = new Vec3(0, 2, 0);
+            cam.vup = new Vec3(0, 1, 0);
+            cam.defocusAngle = 0;
         }
         public Raytracer()
         {
@@ -167,13 +194,14 @@ namespace Raytracing
         }
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            switch(4)
+            switch(5)
             {
                 case 0: BouncingSpheres(); break;
                 case 1: CheckeredSpheres(); break;
                 case 2: Earth(); break;
                 case 3: PerlinSpheres(); break;
                 case 4: Quads(); break;
+                case 5: SimpleLight(); break;
             }
             cam.Render(world, e, resolution);
         }

@@ -13,7 +13,16 @@ namespace Raytracing
 {
     public abstract class Material
     {
-        public abstract bool Scatter(Ray rIn, HitRecord rec, out Vec3 attenuation, out Ray scattered);
+        virtual public bool Scatter(Ray rIn, HitRecord rec, out Vec3 attenuation, out Ray scattered)
+        {
+            attenuation = new Vec3(0, 0, 0);
+            scattered = new Ray(new Vec3(0, 0, 0), new Vec3(0, 0, 0));
+            return false;
+        }
+        virtual public Vec3 ColorEmitted(double u, double v, Vec3 p)
+        {
+            return new Vec3(0, 0, 0);
+        }
     }
     public class Lambertian : Material // solid color
     {
@@ -96,6 +105,22 @@ namespace Raytracing
             double r0 = (1 - refractionIndex) / (1 + refractionIndex);
             r0 = r0 * r0;
             return r0 + (1 - r0) * Math.Pow((1 - cosine), 5);
+        }
+    }
+    public class DifuseLight : Material
+    {
+        private Texture tex;
+        public DifuseLight(Texture tex)
+        {
+            this.tex = tex;
+        }
+        public DifuseLight(Vec3 emit)
+        {
+            this.tex = new SolidColor(emit);
+        }
+        public Vec3 Emitted(double u, double v, Vec3 p)
+        {
+            return tex.Value(u, v, p);
         }
     }
 }
