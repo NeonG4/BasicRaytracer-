@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 // tutorial is from https://raytracing.github.io/ book one is completed
@@ -222,19 +223,79 @@ namespace Raytracing
         {
             InitializeComponent();
         }
+
+        private Bitmap? _renderedBitmap = null;
         public void Raytracer_Paint(object sender, PaintEventArgs e)
         {
-            switch(6)
+            if (_renderedBitmap == null)
             {
-                case 0: BouncingSpheres(); break;
-                case 1: CheckeredSpheres(); break;
-                case 2: Earth(); break;
-                case 3: PerlinSpheres(); break;
-                case 4: Quads(); break;
-                case 5: SimpleLight(); break;
-                case 6: CornellBox(); break;
+                // Create the specific world to render.
+                switch (0)
+                {
+                    case 0: BouncingSpheres(); break;
+                    case 1: CheckeredSpheres(); break;
+                    case 2: Earth(); break;
+                    case 3: PerlinSpheres(); break;
+                    case 4: Quads(); break;
+                    case 5: SimpleLight(); break;
+                    case 6: CornellBox(); break;
+                }
+
+                // Initialize the world to configure the image has a width and height that may be
+                // used to create a bitmap.
+                cam.Initialize();
+                _renderedBitmap = new Bitmap(cam.imageWidth, cam.imageHeight);
+
+                int numSections = Environment.ProcessorCount;
+                List<Thread> threads = new List<Thread>();
+                for (int section = 0; section < numSections; section++)
+                {
+                    int localSection = section;
+                    Thread thread = new Thread(() =>
+                    {
+                        cam.Render(world, _renderedBitmap, resolution, localSection, numSections);
+
+                        // The thread has completed, so lock the pool and remove the thread.
+                        lock (threads)
+                        {
+                            threads.Remove(Thread.CurrentThread);
+                        }
+                    });
+
+                    // Have the thread run at a lower priority so that the UI remains responsive.
+                    thread.Priority = ThreadPriority.BelowNormal;
+
+                    // Add the thread into the pool:
+                    // - Since nothing is started yet, we don't need to lock yet.
+                    threads.Add(thread);
+                }
+
+                // Start all threads in the pool.
+                lock (threads)
+                {
+                    foreach (var thread in threads)
+                    {
+                        thread.Start();
+                    }
+                }
+
+                // While there are still threads in the pool, draw the current state of the
+                // bitmap:
+                while (threads.Count > 0)
+                {
+                    // Need to lock the graphics object to prevent background threads from
+                    // modifying while we draw.
+                    lock (_renderedBitmap)
+                    {
+                        e.Graphics.DrawImage(_renderedBitmap, 0, 0);
+                    }
+
+                    // Wait a 1/2 second before checking again.
+                    Thread.Sleep(500);
+                }
             }
-            cam.Render(world, e, resolution);
+
+            e.Graphics.DrawImage(_renderedBitmap, 0, 0);
         }
     }
 }

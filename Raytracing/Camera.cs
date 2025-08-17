@@ -15,7 +15,6 @@ namespace Raytracing
 
         const double INFINITY = double.PositiveInfinity;
         const double PI = Math.PI;
-        Pen render = new Pen(Color.FromArgb(0, 0, 0), 1);
         public int imageHeight;
         public int samplesPerPixel;
         int pixelSamplesScale;
@@ -43,7 +42,7 @@ namespace Raytracing
         public double focusDist = 10;
         Vec3 defocusDiskU;
         Vec3 defocusDiskV;
-        private void Initialize()
+        public void Initialize()
         {
             imageHeight = (int)(imageWidth / aspectRatio);
             if (imageHeight < 1) { imageHeight = 1; }
@@ -74,14 +73,22 @@ namespace Raytracing
             pixelSamplesScale = 1 / samplesPerPixel;
             maxDepth = 50;
         }
-        public void Render(Hittable world, PaintEventArgs e, int resolution)
+        public void Render(Hittable world, Bitmap targetBitmap, int resolution, 
+            int section, int numSections)
         {
-            Initialize();
             Ray r;
             Vec3 pixelColor;
-            for (double j = 0; j < imageHeight; j++)
+
+            int x1 = 0;
+            int y1 = imageHeight * section / numSections;
+            int x2 = imageWidth;
+            int y2 = imageHeight * (section + 1) / numSections;
+
+            Pen renderPen = new Pen(Color.FromArgb(0, 0, 0), 1);
+
+            for (int j = y1; j < y2; j++)
             {
-                for (double i = 0; i < imageWidth; i++)
+                for (int i = x1; i < x2; i++)
                 {
                     pixelColor = new Vec3(0, 0, 0);
                     for (int sample = 0; sample < samplesPerPixel; sample++)
@@ -89,7 +96,7 @@ namespace Raytracing
                         r = GetRay(i, j);
                         pixelColor += RayColor(r, maxDepth, world); 
                     }
-                    DrawColor(pixelColor / samplesPerPixel, i, j, e, resolution);
+                    DrawColor(pixelColor / samplesPerPixel, i, j, targetBitmap, renderPen, resolution);
                 }
             }
         }
@@ -118,10 +125,10 @@ namespace Raytracing
 
             return colorFromEmission + colorFromScatter;
         }
-        private void DrawColor(Vec3 color, double x, double y, PaintEventArgs e, int resolution)
+        private void DrawColor(Vec3 color, int x, int y, Bitmap targetBitmap,
+            Pen renderPen, int resolution)
         {
             Interval intensity = new Interval(0, 0.999);
-            Rectangle rect = new Rectangle((int)x * resolution, (int)y * resolution, resolution + 1, resolution + 1);
             double r = color.x;
             double g = color.y;
             double b = color.z;
@@ -131,8 +138,19 @@ namespace Raytracing
             int ra = (int) (256 * intensity.Clamp(r));
             int ga = (int) (256 * intensity.Clamp(g));
             int ba = (int) (256 * intensity.Clamp(b));
-            render.Color = Color.FromArgb(ra, ga, ba);
-            e.Graphics.DrawRectangle(render, rect);
+
+            lock (targetBitmap)
+            {
+                var pixelColor = Color.FromArgb(ra, ga, ba);
+
+                for (int px = 0; px < resolution; px++)
+                {
+                    for (int py = 0; py < resolution; py++)
+                    {
+                        targetBitmap.SetPixel(x + px, y + py, pixelColor);
+                    }
+                }
+            }
         }
         public Ray GetRay(double x, double y)
         {
